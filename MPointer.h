@@ -1,15 +1,15 @@
 #ifndef MPOINTER_H
 #define MPOINTER_H
 
-#include "GarbageCollector.h"  // Incluir la gestión de memoria
+#include "GarbageCollector.h"
 
- template <typename T>
+template <typename T>
 class MPointer {
 public:
     // Crear un nuevo MPointer con memoria asignada para el tipo T
     static MPointer<T> New();
 
-    // Constructor por defecto
+
     MPointer();
 
     // Constructor de copia
@@ -29,8 +29,8 @@ public:
 
 private:
     T* ptr;  // Puntero interno encapsulado
-    int id;  // Identificador único para el puntero en MPointerGC
+    int id;  // Identificador único para el puntero
 };
 
-#include "MPointer.cpp"  // Incluir la implementación de la clase template
+#include "MPointer.cpp"
 #endif
