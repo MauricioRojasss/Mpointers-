@@ -6,19 +6,18 @@
 template <typename T>
 class MPointer {
 public:
-    // Crear un nuevo MPointer con memoria asignada para el tipo T
-    static MPointer<T> New();
 
+    static MPointer<T> New();
 
     MPointer();
 
-    // Constructor de copia
+    // Constructor de copia con deep copy
     MPointer(const MPointer<T>& other);
 
-    // Sobrecarga del operador de asignación
+    // Sobrecarga del operador de asignación con deep copy
     MPointer<T>& operator=(const MPointer<T>& other);
 
-    // Destructor
+
     ~MPointer();
 
     // Sobrecarga del operador * para acceder al valor

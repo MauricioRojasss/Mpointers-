@@ -5,14 +5,15 @@
 #include <thread>
 #include <atomic>
 #include <chrono>
+#include "MPointer.h"
 
 class MPointerGC {
 public:
-
     static MPointerGC& Instance();
 
-    // Registrar un nuevo puntero en el sistema y devolver el ID
-    int RegisterPointer(void* ptr);
+    // Registrar un nuevo MPointer en el sistema y devolver el ID
+    template <typename T>
+    int RegisterPointer(MPointer<T> ptr);
 
     // Incrementar el contador de referencias
     void IncrementReference(int id);
@@ -20,24 +21,21 @@ public:
     // Disminuir el contador de referencias
     void DecrementReference(int id);
 
-
     void StartGarbageCollector();
     void StopGarbageCollector();
 
 private:
-    MPointerGC();  // Constructor
-    ~MPointerGC(); // Destructor
+    MPointerGC();
+    ~MPointerGC();
 
-    // Función  que ejecuta el ciclo de limpieza
-    void GarbageCollectorTask();
+    void GarbageCollectorTask();  // Ciclo de limpieza
 
-    // Mapa que asocia IDs únicos con punteros y sus contadores de referencia
-    std::unordered_map<int, std::pair<void*, int>> pointer_map;
+    std::unordered_map<int, std::pair<void*, int>> pointer_map; // Mapa de punteros y referencias
 
-    int next_id;  // ID
+    int next_id;  // ID autogenerado
 
-    std::atomic<bool> running;  //  detener el hilo
+    std::atomic<bool> running;  // Control del hilo del GC
     std::thread gc_thread;      // Hilo del Garbage Collector
 };
 
-#endif // GARBAGECOLLECTOR_H
+#endif

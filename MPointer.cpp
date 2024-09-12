@@ -1,25 +1,40 @@
 #include "MPointer.h"
 
-// Constructor por defecto
+
 template <typename T>
 MPointer<T>::MPointer() : ptr(nullptr), id(-1) {}
 
-// Constructor de copia
+// Constructor de copia  (deep copy)
 template <typename T>
 MPointer<T>::MPointer(const MPointer<T>& other) {
-    ptr = other.ptr;  // Copiar el puntero
-    id = other.id;    // Copiar el ID
-    MPointerGC::Instance().IncrementReference(id);  // Incrementar la referencia en el GC
+    if (other.ptr != nullptr) {
+        // Crear una copia profunda del valor apuntado
+        ptr = new T(*other.ptr);
+    } else {
+        ptr = nullptr;
+    }
+    id = MPointerGC::Instance().RegisterPointer(ptr);  // Registrar el nuevo puntero en el GC
 }
 
-// Sobrecarga del operador de asignación
+// Sobrecarga del operador de asignación con deep copy
 template <typename T>
 MPointer<T>& MPointer<T>::operator=(const MPointer<T>& other) {
     if (this != &other) {  // Evitar autoasignación
-        MPointerGC::Instance().DecrementReference(id);  // Disminuir la referencia actual
-        ptr = other.ptr;  // Asignar el puntero del otro MPointer
-        id = other.id;    // Copiar el ID
-        MPointerGC::Instance().IncrementReference(id);  // Incrementar la referencia en el GC
+        // Liberar la memoria del puntero actual si existe
+        if (ptr != nullptr) {
+            delete ptr;
+        }
+
+        // Realizar deep copy del otro puntero
+        if (other.ptr != nullptr) {
+            ptr = new T(*other.ptr);
+        } else {
+            ptr = nullptr;
+        }
+
+        MPointerGC::Instance().DecrementReference(id);  // Disminuir la referencia del puntero antiguo
+
+        id = MPointerGC::Instance().RegisterPointer(ptr);  // Registrar el nuevo puntero en el GC
     }
     return *this;
 }
@@ -28,6 +43,9 @@ MPointer<T>& MPointer<T>::operator=(const MPointer<T>& other) {
 template <typename T>
 MPointer<T>::~MPointer() {
     MPointerGC::Instance().DecrementReference(id);  // Disminuir la referencia
+    if (ptr != nullptr) {
+        delete ptr;  // Liberar la memoria
+    }
 }
 
 // Sobrecarga del operador *
