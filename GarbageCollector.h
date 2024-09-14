@@ -24,16 +24,14 @@ public:
     void StartGarbageCollector();
     void StopGarbageCollector();
 
+    void GarbageCollectorTask();  // Ciclo de limpieza
+
 private:
     MPointerGC();
     ~MPointerGC();
 
-    void GarbageCollectorTask();  // Ciclo de limpieza
-
-    std::unordered_map<int, std::pair<void*, int>> pointer_map; // Mapa de punteros y referencias
-
+    std::unordered_map<int, std::pair<MPointer<void>, int>> pointer_map; // Mapa de punteros y referencias
     int next_id;  // ID autogenerado
-
     std::atomic<bool> running;  // Control del hilo del GC
     std::thread gc_thread;      // Hilo del Garbage Collector
 };

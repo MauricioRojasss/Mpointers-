@@ -1,8 +1,6 @@
 #include "GarbageCollector.h"
 
-
 MPointerGC::MPointerGC() : next_id(0), running(false) {}
-
 
 MPointerGC::~MPointerGC() {
     StopGarbageCollector();
@@ -18,7 +16,7 @@ MPointerGC& MPointerGC::Instance() {
 template <typename T>
 int MPointerGC::RegisterPointer(MPointer<T> ptr) {
     int id = next_id++;
-    pointer_map[id] = {static_cast<void*>(ptr.operator&()), 1};  // Guardar el puntero con contador de referencia inicial 1
+    pointer_map[id] = {MPointer<void>(reinterpret_cast<void*>(ptr.operator&())), 1};  // Guardar el puntero con contador de referencia inicial 1
     return id;
 }
 
@@ -34,7 +32,7 @@ void MPointerGC::DecrementReference(int id) {
     if (pointer_map.find(id) != pointer_map.end()) {
         pointer_map[id].second--;  // Disminuir el contador
         if (pointer_map[id].second == 0) {
-            delete static_cast<MPointer<void>*>(pointer_map[id].first);  // Liberar memoria
+
             pointer_map.erase(id);  // Eliminar del mapa
         }
     }
@@ -61,7 +59,6 @@ void MPointerGC::GarbageCollectorTask() {
 
         for (auto it = pointer_map.begin(); it != pointer_map.end();) {
             if (it->second.second == 0) {
-                delete static_cast<MPointer<void>*>(it->second.first);  // Liberar memoria
                 it = pointer_map.erase(it);  // Eliminar del mapa
             } else {
                 ++it;

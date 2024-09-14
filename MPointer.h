@@ -6,7 +6,6 @@
 template <typename T>
 class MPointer {
 public:
-
     static MPointer<T> New();
 
     MPointer();
@@ -17,14 +16,19 @@ public:
     // Sobrecarga del operador de asignación con deep copy
     MPointer<T>& operator=(const MPointer<T>& other);
 
-
     ~MPointer();
 
-    // Sobrecarga del operador * para acceder al valor
+    // Sobrecarga  para acceder al valor
     T& operator*();
 
-    // Sobrecarga del operador & para obtener la referencia
+    // Sobrecarga  para obtener la referencia
     T* operator&();
+
+    // Sobrecarga  para acceder a los miembros del puntero
+    T* operator->();
+
+    // Método para verificar si el MPointer está "nulo"
+    bool isNull() const;
 
 private:
     T* ptr;  // Puntero interno encapsulado
